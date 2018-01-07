@@ -1,6 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String
-from sqlalchemy import sessionmaker
+from sqlalchemy import Column, Integer, String, create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.schema import ForeignKey
 
 engine = create_engine('sqlite:///itemcatalog.db', echo=True)
 
