@@ -1,5 +1,8 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String
+from sqlalchemy import sessionmaker
+
+engine = create_engine('sqlite:///itemcatalog.db', echo=True)
 
 Base = declarative_base()
 
@@ -26,4 +29,6 @@ class Item(Base):
                  'name': self.name,
                  'category_id': self.category_id,
                  'description': self.description }
+
+SQLSession = sessionmaker(bind=engine)
                  
