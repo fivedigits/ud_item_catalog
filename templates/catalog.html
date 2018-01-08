@@ -8,6 +8,22 @@
     <header>
     </header>
     <main>
+      <div id="categories">
+        <ul>
+	  {% for category in categories %}
+          <li> {{ category['name'] }}
+	  </li>
+	  {% endfor %}
+        </ul>
+      </div>
+      <div id="items">
+	<ul>
+	  {% for item in items %}
+	  <li> {{ item['name'] }} (<em>{{ item['create_date'] }}</em>)
+	  </li>
+	  {% endfor %}
+	</ul>
+      </div id="items">
     </main>
   </body>
 </html>
