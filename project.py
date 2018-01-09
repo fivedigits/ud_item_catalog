@@ -1,26 +1,34 @@
+import os
+
+# in production, https should be used
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'y'
+
 from flask import Flask, render_template, request, redirect, url_for, session
 from db_setup import Base, Category, Item, SQLSession
 from sqlalchemy.exc import IntegrityError
 from google_auth_oauthlib.flow import Flow
 
+
 app = Flask(__name__)
 app.secret_key = "Supersecret Key"
 
+USERINFO_URL = 'https://www.googleapis.com/userinfo/v2/me'
 FLOW = Flow.from_client_secrets_file('client_secrets.json',
-                                        scopes = ['profile'],
+                                        scopes = ['profile', 'email'],
                                         redirect_uri = 'http://localhost:8000/login')
 
 @app.route("/login")
 def login():
-    # not sure why I should heed this state
+    # This has to be reworked into anti-forgery stuff
     session['state'] = request.args['state']
     authorization_response = request.url
     FLOW.fetch_token(authorization_response = authorization_response)
-    credentials = FLOW.credentials
-    session['credentials'] = {
-        'token' : credentials.token,
-         'id' : credentials.client_id}
-    return redirect("/")
+    auth_session = FLOW.authorized_session()
+    userinfo = auth_session.get(USERINFO_URL).json()
+    session['userinfo'] = {
+        'name' :  userinfo['name'],
+        'email' : userinfo['email']}
+    return str(session['userinfo']['email']) #redirect("/")
 
 @app.route("/gconnect")
 def gconnect():
@@ -38,7 +46,7 @@ def catalog():
 
 @app.route("/categories/new", methods=['GET', 'POST'])
 def insertCategory():
-    if not session['credentials']:
+    if not session['userinfo']:
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
         try:
@@ -57,7 +65,7 @@ def insertCategory():
         
 @app.route("/items/new", methods=['GET', 'POST'])
 def insertItem():
-    if not session['credentials']:
+    if not session['userinfo']:
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
         item = Item(name = request.form['name'],
