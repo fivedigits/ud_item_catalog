@@ -14,8 +14,7 @@
       <div id="items">
 	<h3>{{ item_title }}</h3>
 	{% for item in items %}
-	<a class="view-link" href="{{ url_for('viewItem', id = item['Item']['id']) }}"> {{ item['Item']['name'] }} (<em>{{ item['Category']['name'] }}</em>)
-	</a>
+	<a class="view-link" href="{{ url_for('viewItem', id = item['id']) }}"> {{ item['name'] }}</a>
 	{% endfor %}
 	<a class="add-button" href="{{ url_for('insertItem') }}">Add Item</a>
       </div id="items">

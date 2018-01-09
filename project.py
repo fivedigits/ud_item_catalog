@@ -68,7 +68,15 @@ def catalog():
 
 @app.route("/categories")
 def viewCategory():
-    return str(request.args['id'])
+    sqlsession = SQLSession()
+    cat_id = int(request.args['id'])
+    category = sqlsession.query(Category).filter(Category.id == cat_id).first()
+    categories = sqlsession.query(Category).all()
+    items = sqlsession.query(Item).filter_by(category_id = cat_id).all()
+    return render_template("view_category.html", category = category,
+                           categories = categories,
+                           items = items,
+                           item_title = category.name + " Items")
 
 @app.route("/categories/new", methods=['GET', 'POST'])
 def insertCategory():
