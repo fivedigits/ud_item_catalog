@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Item Catalog</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
-    <header>
-    </header>
+{% extends "layout.html" %}
+{% block heading %}
+<h1>Item Catalog</h1>
+{% endblock %}
+{% block main %}
     <main>
       <div id="categories">
         <ul>
@@ -25,5 +21,4 @@
 	</ul>
       </div id="items">
     </main>
-  </body>
-</html>
+{% endblock %}

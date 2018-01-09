@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Item Catalog</title>
+  </head>
+  <body>
+    <header>
+      <div id="nav-bar">
+	<div id="heading">
+	  {% block heading %}{% endblock %}
+	</div>
+	<div id="gsignin">
+	  {% if 'userinfo' in session.keys() %}
+	  Logged in as {{ session['userinfo']['name'] }}
+	  {% else %}
+	  <a id="gsignin-link" href="{{ url_for('gconnect') }}"><img id="gsignin-image" src="{{ url_for('static', filename='btn_google_light_normal_ios.svg') }}"><span>Login</span></a>
+	  {% endif %}
+	</div>
+      </div>
+    </header>
+    {% block main %}{% endblock %}
+  </body>
+</html>
+
