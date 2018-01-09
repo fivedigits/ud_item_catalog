@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, m
 import json
 import random
 import string
-from db_setup import Base, Category, Item, SQLSession
+from db_setup import Base, Category, Item, SQLSession, User
 from sqlalchemy.exc import IntegrityError
 from google_auth_oauthlib.flow import Flow
 
@@ -35,6 +35,14 @@ def login():
     session['userinfo'] = {
         'name' :  userinfo['name'],
         'email' : userinfo['email']}
+    sqlsession = SQLSession()
+    user = User(name = userinfo['name'], email = userinfo['email'])
+    try:
+        sqlsession.add(user)
+        sqlsession.commit()
+    except IntegrityError:
+        # user already exists in DB
+        pass
     return redirect("/")
 
 @app.route("/gconnect")
@@ -56,12 +64,14 @@ def catalog():
 
 @app.route("/categories/new", methods=['GET', 'POST'])
 def insertCategory():
-    if not session['userinfo']:
+    if not 'userinfo' in session.keys():
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
         try:
-            category = Category(name = request.form['name'])
             sqlsession = SQLSession()
+            creator_email = session['userinfo']['email']
+            user = sqlsession.query(User).filter_by(email = creator_email).first()
+            category = Category(name = request.form['name'], creator_id = user.id)
             sqlsession.add(category)
             sqlsession.commit()
         except IntegrityError:
@@ -75,13 +85,16 @@ def insertCategory():
         
 @app.route("/items/new", methods=['GET', 'POST'])
 def insertItem():
-    if not session['userinfo']:
+    if not 'userinfo' in session.keys():
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
+        creator_email = session['userinfo']['email']
+        sqlsession = SQLSession()
+        user = sqlsession.query(User).filter_by(email = creator_email).first()
         item = Item(name = request.form['name'],
                     description = request.form['description'],
-                    category_id = int(request.form['category']))
-        sqlsession = SQLSession()
+                    category_id = int(request.form['category']),
+                    creator_id = user.id)
         sqlsession.add(item)
         sqlsession.commit()
         return redirect("/")
