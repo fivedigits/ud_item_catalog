@@ -8,8 +8,6 @@ body {
     display: flex;
     align-items: center;
     padding: 0.5em;
-    border-style: solid;
-    border-radius: 0.5em;
 }
 
 #heading {

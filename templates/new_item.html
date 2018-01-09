@@ -1,18 +1,18 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>New Item</title>
-  </head>
-  <body>
-    <form action="/items/new" method="POST">
-      <input type="text" name="name" placeholder="Name" required/>
-      <select name="category" required>
-	{% for category in categories %}
-	<option value="{{ category['id'] }}">{{ category['name'] }}</option>
-	{% endfor %}
+{% extends "layout.html" %}
+{% block heading %}
+<h1>New Item</h1>
+{% endblock %}
+{% block main %}
+<main>
+  <form action="/items/new" method="POST">
+    <input type="text" name="name" placeholder="Name" required/>
+    <select name="category" required>
+      {% for category in categories %}
+      <option value="{{ category['id'] }}">{{ category['name']}}</option>
+      {% endfor %}
       </select>
-      <textarea name="description" placeholder="Description" required></textarea>
-      <input type="submit" value="Submit"/>
-    </form>
-  </body>
-</html>
+    <textarea name="description" placeholder="Description" required></textarea>
+    <input type="submit" value="Submit"/>
+  </form>
+</main>
+{% endblock %}
