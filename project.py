@@ -94,7 +94,10 @@ def insertCategory():
 
 @app.route("/items")
 def viewItem():
-    return str(request.args['id'])
+    id = request.args['id']
+    sqlsession = SQLSession()
+    item = sqlsession.query(Item, Category).join(Category).filter(Item.id == id).first()
+    return render_template("view_item.html", item = item)
         
 @app.route("/items/new", methods=['GET', 'POST'])
 def insertItem():
