@@ -43,14 +43,18 @@ def login():
     except IntegrityError:
         # user already exists in DB
         pass
-    return redirect("/")
+    if not 'target' in session.keys():
+        return redirect("/")
+    elif session['target'] == "new_cat":
+        return redirect(url_for('insertCategory'))
+    elif session['target'] == "new_item":
+        return redirect(url_for('insertItem'))
 
 @app.route("/gconnect")
 def gconnect():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
-    session['state'] = state
+    session['state'] = newState()
     # Google will return the state as a query parameter
-    authorization_url, state = FLOW.authorization_url(state = state)
+    authorization_url, state = FLOW.authorization_url(state = session['state'])
     return redirect(authorization_url)
                                                                    
 @app.route("/")
@@ -65,6 +69,7 @@ def catalog():
 @app.route("/categories/new", methods=['GET', 'POST'])
 def insertCategory():
     if not 'userinfo' in session.keys():
+        session['target'] = "new_cat"
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
         try:
@@ -86,6 +91,7 @@ def insertCategory():
 @app.route("/items/new", methods=['GET', 'POST'])
 def insertItem():
     if not 'userinfo' in session.keys():
+        session['target'] = "new_item"
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
         creator_email = session['userinfo']['email']
@@ -103,6 +109,9 @@ def insertItem():
         categories = sqlsession.query(Category).all()
         return render_template("new_item.html",
                                categories = categories)
+
+def newState():
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
 
 if __name__ == '__main__':
     app.debug = True
