@@ -60,11 +60,15 @@ def gconnect():
 @app.route("/")
 def catalog():
     sqlsession = SQLSession()
-    items = sqlsession.query(Item).order_by(Item.create_date).limit(10)
+    items = sqlsession.query(Item, Category).join(Category).order_by(Item.create_date).limit(10)
     categories = sqlsession.query(Category).all()
     return render_template("catalog.html",
                            items = items,
                            categories = categories)
+
+@app.route("/categories")
+def viewCategory():
+    return str(request.args['id'])
 
 @app.route("/categories/new", methods=['GET', 'POST'])
 def insertCategory():
@@ -87,6 +91,10 @@ def insertCategory():
         return redirect("/")
     else:
         return render_template("new_category.html")
+
+@app.route("/items")
+def viewItem():
+    return str(request.args['id'])
         
 @app.route("/items/new", methods=['GET', 'POST'])
 def insertItem():

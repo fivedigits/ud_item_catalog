@@ -3,22 +3,21 @@
 <h1>Item Catalog</h1>
 {% endblock %}
 {% block main %}
-    <main>
+    <main id="cat-item-display">
       <div id="categories">
-        <ul>
-	  {% for category in categories %}
-          <li> {{ category['name'] }}
-	  </li>
-	  {% endfor %}
-        </ul>
+	<h3>Categories</h3>
+	{% for category in categories %}
+        <a class="view-link" href="{{ url_for('viewCategory', id = category['id']) }}"> {{ category['name'] }}</a>
+	{% endfor %}
+	<a class="add-button" href="{{ url_for('insertCategory') }}">Add Category</a>
       </div>
       <div id="items">
-	<ul>
-	  {% for item in items %}
-	  <li> {{ item['name'] }} (<em>{{ item['create_date'] }}</em>)
-	  </li>
-	  {% endfor %}
-	</ul>
+	<h3>Latest Items</h3>
+	{% for item in items %}
+	<a class="view-link" href="{{ url_for('viewItem', id = item['Item']['id']) }}"> {{ item['Item']['name'] }} (<em>{{ item['Category']['name'] }}</em>)
+	</a>
+	{% endfor %}
+	<a class="add-button" href="{{ url_for('insertItem') }}">Add Item</a>
       </div id="items">
     </main>
 {% endblock %}
