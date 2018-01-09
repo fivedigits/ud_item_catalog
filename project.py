@@ -3,24 +3,31 @@ import os
 # in production, https should be used
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'y'
 
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, make_response
+import json
+import random
+import string
 from db_setup import Base, Category, Item, SQLSession
 from sqlalchemy.exc import IntegrityError
 from google_auth_oauthlib.flow import Flow
 
 
 app = Flask(__name__)
-app.secret_key = "Supersecret Key"
+# At every startup, compute a new secret key
+app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+
 
 USERINFO_URL = 'https://www.googleapis.com/userinfo/v2/me'
 FLOW = Flow.from_client_secrets_file('client_secrets.json',
-                                        scopes = ['profile', 'email'],
-                                        redirect_uri = 'http://localhost:8000/login')
+                                     scopes = ['profile', 'email'],
+                                     redirect_uri = 'http://localhost:8000/login')
 
 @app.route("/login")
 def login():
-    # This has to be reworked into anti-forgery stuff
-    session['state'] = request.args['state']
+    if session['state'] != request.args['state']:
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
     authorization_response = request.url
     FLOW.fetch_token(authorization_response = authorization_response)
     auth_session = FLOW.authorized_session()
@@ -28,11 +35,14 @@ def login():
     session['userinfo'] = {
         'name' :  userinfo['name'],
         'email' : userinfo['email']}
-    return str(session['userinfo']['email']) #redirect("/")
+    return redirect("/")
 
 @app.route("/gconnect")
 def gconnect():
-    authorization_url, state = FLOW.authorization_url()
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    session['state'] = state
+    # Google will return the state as a query parameter
+    authorization_url, state = FLOW.authorization_url(state = state)
     return redirect(authorization_url)
                                                                    
 @app.route("/")
