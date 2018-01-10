@@ -45,10 +45,8 @@ def login():
         pass
     if not 'target' in session.keys():
         return redirect("/")
-    elif session['target'] == "new_cat":
-        return redirect(url_for('insertCategory'))
-    elif session['target'] == "new_item":
-        return redirect(url_for('insertItem'))
+    else:
+        return redirect(session['target'])
 
 @app.route("/gconnect")
 def gconnect():
@@ -66,10 +64,10 @@ def catalog():
                            items = items,
                            categories = categories)
 
-@app.route("/categories")
-def viewCategory():
+@app.route("/categories/<int:cat_id>")
+def viewCategory(cat_id):
+    session['target'] = url_for('viewCategory', cat_id = cat_id)
     sqlsession = SQLSession()
-    cat_id = int(request.args['id'])
     category = sqlsession.query(Category).filter(Category.id == cat_id).first()
     categories = sqlsession.query(Category).all()
     items = sqlsession.query(Item).filter_by(category_id = cat_id).all()
@@ -81,7 +79,7 @@ def viewCategory():
 @app.route("/categories/new", methods=['GET', 'POST'])
 def insertCategory():
     if not 'userinfo' in session.keys():
-        session['target'] = "new_cat"
+        session['target'] = url_for('insertCategory')
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
         try:
@@ -100,9 +98,10 @@ def insertCategory():
     else:
         return render_template("new_category.html")
 
-@app.route("/items")
-def viewItem():
-    id = request.args['id']
+@app.route("/items/<int:item_id>")
+def viewItem(item_id):
+    session['target'] = url_for('viewItem', item_id = item_id)
+    id = item_id
     sqlsession = SQLSession()
     item = sqlsession.query(Item, Category).join(Category).filter(Item.id == id).first()
     return render_template("view_item.html", item = item)
@@ -110,7 +109,7 @@ def viewItem():
 @app.route("/items/new", methods=['GET', 'POST'])
 def insertItem():
     if not 'userinfo' in session.keys():
-        session['target'] = "new_item"
+        session['target'] = url_for('insertItem')
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
         creator_email = session['userinfo']['email']
@@ -128,6 +127,29 @@ def insertItem():
         categories = sqlsession.query(Category).all()
         return render_template("new_item.html",
                                categories = categories)
+
+@app.route("/items/<int:item_id>/edit", methods = ['GET', 'POST'])
+def editItem(item_id):
+    if not 'userinfo' in session.keys():
+        session['target'] = url_for('editItem', item_id = item_id)
+        return redirect(url_for('gconnect'))
+    if request.method == 'POST':
+        sqlsession = SQLSession()
+        item = sqlsession.query(Item).filter_by(id = item_id).first()
+        item.name = request.form['name']
+        item.category_id = request.form['category']
+        item.description = request.form['description']
+        sqlsession.commit()
+        return redirect(url_for('viewItem', item_id = item_id))
+    else:
+        sqlsession = SQLSession()
+        item = sqlsession.query(Item).filter_by(id = item_id).first()
+        categories = sqlsession.query(Category).all()
+        return render_template("edit_item.html", item = item, categories = categories)
+
+@app.route("/items/<int:item_id>/delete")
+def deleteItem(item_id):
+    return str(item_id)
 
 def newState():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
