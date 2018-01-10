@@ -159,7 +159,6 @@ def deleteItem(item_id):
         return redirect("/")
     else:
         sqlsession = SQLSession()
-        sqlsession = SQLSession()
         item = sqlsession.query(Item, Category).join(Category).filter(Item.id == item_id).first()
         return render_template("delete_item.html", item = item)
 
