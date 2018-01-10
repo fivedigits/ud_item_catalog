@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block heading %}
+<h1>{{ item['Item']['name'] }}</h1>
+{% endblock %}
+{% block main %}
+<main>
+  <em>{{ item['Category']['name'] }}</em>
+  <p>{{ item['Item']['description'] }}</p>
+  {% if 'userinfo' in session.keys() %}
+  <h3>Really delete item "{{ item['Item']['name'] }}"?</h3>
+  <form action="{{ url_for('deleteItem', item_id = item['Item']['id']) }}" method="POST">
+    <input type="submit" value="Delete">
+  </form>
+  {% endif %}
+</main>
+{% endblock %}

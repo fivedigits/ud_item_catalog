@@ -101,9 +101,8 @@ def insertCategory():
 @app.route("/items/<int:item_id>")
 def viewItem(item_id):
     session['target'] = url_for('viewItem', item_id = item_id)
-    id = item_id
     sqlsession = SQLSession()
-    item = sqlsession.query(Item, Category).join(Category).filter(Item.id == id).first()
+    item = sqlsession.query(Item, Category).join(Category).filter(Item.id == item_id).first()
     return render_template("view_item.html", item = item)
         
 @app.route("/items/new", methods=['GET', 'POST'])
@@ -147,9 +146,22 @@ def editItem(item_id):
         categories = sqlsession.query(Category).all()
         return render_template("edit_item.html", item = item, categories = categories)
 
-@app.route("/items/<int:item_id>/delete")
+@app.route("/items/<int:item_id>/delete", methods = ['GET', 'POST'])
 def deleteItem(item_id):
-    return str(item_id)
+    if not 'userinfo' in session.keys():
+        session['target'] = url_for('deleteItem', item_id = item_id)
+        return redirect(url_for('gconnect'))
+    if request.method == 'POST':
+        sqlsession = SQLSession()
+        item = sqlsession.query(Item).filter_by(id = item_id).first()
+        sqlsession.delete(item)
+        sqlsession.commit()
+        return redirect("/")
+    else:
+        sqlsession = SQLSession()
+        sqlsession = SQLSession()
+        item = sqlsession.query(Item, Category).join(Category).filter(Item.id == item_id).first()
+        return render_template("delete_item.html", item = item)
 
 def newState():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
