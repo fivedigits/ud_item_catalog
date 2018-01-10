@@ -71,7 +71,8 @@ def catalog():
     categories = sqlsession.query(Category).all()
     return render_template("catalog.html",
                            items = items,
-                           categories = categories)
+                           categories = categories,
+                           item_title = "Latest Items")
 
 @app.route("/categories/<int:cat_id>")
 def viewCategory(cat_id):

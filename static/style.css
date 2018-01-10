@@ -2,7 +2,6 @@ body {
     max-width: 980px;
     margin-left: auto;
     margin-right: auto;
-    box-sizing: border-box;
 }
 
 ul {
@@ -72,5 +71,14 @@ ul {
 .view-link {
     text-decoration: none;
     color: inherit;
+}
+
+.edit-link {
+    text-decoration: none;
+    color: inherit;
+    padding: 0.5em;
+    margin: 0.5 em;
+    border-style: solid;
+    border-radius: 0.5em;
 }
 

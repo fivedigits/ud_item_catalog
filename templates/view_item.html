@@ -7,8 +7,8 @@
   <em>{{ item['Category']['name'] }}</em>
   <p>{{ item['Item']['description'] }}</p>
   {% if 'userinfo' in session.keys() %}
-  <a href="{{ url_for('editItem', item_id = item['Item']['id']) }}">Edit</a>
-  <a href="{{ url_for('deleteItem', item_id = item['Item']['id']) }}">Delete</a>
+  <a class="edit-link" href="{{ url_for('editItem', item_id = item['Item']['id']) }}">Edit</a>
+  <a class="edit-link" href="{{ url_for('deleteItem', item_id = item['Item']['id']) }}">Delete</a>
   {% endif %}
 </main>
 {% endblock %}
