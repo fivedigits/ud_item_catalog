@@ -33,6 +33,11 @@ ul {
     padding: 0.5em;
 }
 
+#signout {
+    text-decoration: none;
+    color: gray;
+}
+
 #gsignin-link {
     display: flex;
     align-items: center;

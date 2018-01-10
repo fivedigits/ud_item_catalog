@@ -22,6 +22,15 @@ FLOW = Flow.from_client_secrets_file('client_secrets.json',
                                      scopes = ['profile', 'email'],
                                      redirect_uri = 'http://localhost:8000/login')
 
+@app.route("/logout")
+def logout():
+    session.pop('userinfo', None)
+    # no more steps necessary, because we don't keep the token around
+    if not 'target' in session.keys():
+        return redirect("/")
+    else:
+        return redirect(session['target'])
+    
 @app.route("/login")
 def login():
     if session['state'] != request.args['state']:
