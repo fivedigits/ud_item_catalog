@@ -107,6 +107,7 @@ def catalog():
        Returns:
            A http response containing catalog.html.
     """
+    session['target'] = "/"
     sqlsession = SQLSession()
     items = sqlsession.query(Item, Category)\
                       .join(Category).order_by(Item.create_date).limit(10)
