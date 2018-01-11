@@ -4,7 +4,7 @@
 {% endblock %}
 {% block main %}
 <main>
-  <form action="{{ url_for('editItem', item_id = item['id']) }}" method="POST">
+  <form action="{{ url_for('edit_item', item_id=item['id']) }}" method="POST">
     <input type="text" name="name" value="{{ item['name'] }}" required/>
     <select name="category" required>
       {% for category in categories %}

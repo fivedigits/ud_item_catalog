@@ -4,7 +4,7 @@
 {% endblock %}
 {% block main %}
 <main>
-  <form action="/categories/new" method="POST">
+  <form action="{{ url_for('insert_category') }}" method="POST">
     <input type="text" name="name" placeholder="Name" required/>
     <input type="submit" value="Submit"/>
   </form>

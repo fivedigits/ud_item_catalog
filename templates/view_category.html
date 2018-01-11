@@ -7,16 +7,16 @@
   <div id="categories">
     <h3>Categories</h3>
     {% for category in categories %}
-    <a class="view-link" href="{{ url_for('viewCategory', cat_id = category['id']) }}"> {{ category['name'] }}</a>
+    <a class="view-link" href="{{ url_for('view_category', cat_id = category['id']) }}"> {{ category['name'] }}</a>
     {% endfor %}
-    <a class="add-button" href="{{ url_for('insertCategory') }}">Add Category</a>
+    <a class="add-button" href="{{ url_for('insert_category') }}">Add Category</a>
   </div>
   <div id="items">
     <h3>{{ item_title }}</h3>
     {% for item in items %}
-    <a class="view-link" href="{{ url_for('viewItem', item_id = item['id']) }}"> {{ item['name'] }}</a>
+    <a class="view-link" href="{{ url_for('view_item', item_id=item['id']) }}"> {{ item['name'] }}</a>
     {% endfor %}
-    <a class="add-button" href="{{ url_for('insertItem') }}">Add Item</a>
+    <a class="add-button" href="{{ url_for('insert_item') }}">Add Item</a>
   </div id="items">
 </main>
 {% endblock %}
