@@ -172,6 +172,27 @@ def deleteItem(item_id):
         item = sqlsession.query(Item, Category).join(Category).filter(Item.id == item_id).first()
         return render_template("delete_item.html", item = item)
 
+@app.route("/json")
+def jsonAPI():
+    if 'category' in request.args:
+        sqlsession = SQLSession()
+        category = sqlsession.query(Category).filter_by(name = request.args['category']).first()
+        items = sqlsession.query(Item).filter_by(category_id = category.id).all()
+        return json.dumps({'category_id' : category.id,
+                          'category_name' : category.name,
+                          'items' : [item.serialize() for item in items]})
+    elif 'item' in request.args:
+        sqlsession = SQLSession()
+        items = sqlsession.query(Item).filter_by(name = request.args['item']).all()
+        return json.dumps([item.serialize() for item in items])
+    else:
+        sqlsession = SQLSession()
+        categories = sqlsession.query(Category).all()
+        items = sqlsession.query(Item).all()
+        return json.dumps({'categories' : [cat.serialize() for cat in categories],
+                          'items' : [item.serialize() for item in items]})
+        
+
 def newState():
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
 
