@@ -17,6 +17,9 @@ Since oauth2client has been deprecated, you will additionally have to install go
 
 ```sudo pip install --upgrade google-auth-oauthlib```
 
+(Alternatively, you can put ```pip2 install --upgrade google-auth-oauthlib``` in
+your Vagrantfile before ```vagrant up```)
+
 On
 
 ```https://console.developers.google.com/apis/library```
