@@ -11,6 +11,9 @@
 	<div id="heading">
 	  {% block heading %}{% endblock %}
 	</div>
+	<div id="home-btn">
+	  <a class="home-link" href="/">Home</a>
+	</div>
 	<div id="gsignin">
 	  {% if 'userinfo' in session.keys() %}
 	  Logged in as {{ session['userinfo']['name'] }}

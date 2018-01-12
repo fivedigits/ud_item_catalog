@@ -33,7 +33,7 @@ in the ```catalog``` directory.
 ## Running the Server
 In your running vagrant machine, change into
 
-```/vagrant/catalog```
+```/vagrant/ud_item_catalog```
 
 and run
 

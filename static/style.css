@@ -24,6 +24,19 @@ ul {
     margin-right: auto;
 }
 
+#home-btn {
+    display: inline-block;
+    margin-left: auto;
+    border-style: solid;
+    border-radius: 0.5em;
+    padding: 0.5em;
+}
+
+.home-link {
+    text-decoration: none;
+    color: inherit;
+}
+
 #gsignin {
     display: inline-bock;
     margin-left: auto;
