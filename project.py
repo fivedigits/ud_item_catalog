@@ -17,7 +17,7 @@ import json
 import random
 from flask import Flask, render_template, request, redirect,\
     url_for, session, make_response
-from db_setup import Category, Item, SQLSession, User
+from db_setup import Category, Item, SQLSESSION, User
 from sqlalchemy.exc import IntegrityError
 from google_auth_oauthlib.flow import Flow
 
@@ -74,7 +74,7 @@ def login():
     session['userinfo'] = {
         'name':  userinfo['name'],
         'email': userinfo['email']}
-    sqlsession = SQLSession()
+    sqlsession = SQLSESSION()
     user = User(name=userinfo['name'], email=userinfo['email'])
     try:
         sqlsession.add(user)
@@ -109,7 +109,7 @@ def catalog():
            A http response containing catalog.html.
     """
     session['target'] = "/"
-    sqlsession = SQLSession()
+    sqlsession = SQLSESSION()
     items = sqlsession.query(Item, Category)\
                       .join(Category).order_by(Item.create_date).limit(10)
     categories = sqlsession.query(Category).all()
@@ -131,7 +131,7 @@ def view_category(cat_id):
         An http response containing view_category.html.
     """
     session['target'] = url_for('view_category', cat_id=cat_id)
-    sqlsession = SQLSession()
+    sqlsession = SQLSESSION()
     category = sqlsession.query(Category).filter_by(id=cat_id).first()
     categories = sqlsession.query(Category).all()
     items = sqlsession.query(Item).filter_by(category_id=cat_id).all()
@@ -160,7 +160,7 @@ def insert_category():
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
         try:
-            sqlsession = SQLSession()
+            sqlsession = SQLSESSION()
             creator_email = session['userinfo']['email']
             user = sqlsession.query(User)\
                              .filter_by(email=creator_email).first()
@@ -188,7 +188,7 @@ def view_item(item_id):
             An http response containing view_item.html.
     """
     session['target'] = url_for('view_item', item_id=item_id)
-    sqlsession = SQLSession()
+    sqlsession = SQLSESSION()
     item = sqlsession.query(Item, Category).join(Category)\
                                            .filter(Item.id == item_id).first()
     return render_template("view_item.html", item=item)
@@ -210,7 +210,7 @@ def insert_item():
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
         creator_email = session['userinfo']['email']
-        sqlsession = SQLSession()
+        sqlsession = SQLSESSION()
         user = sqlsession.query(User).filter_by(email=creator_email).first()
         item = Item(name=request.form['name'],
                     description=request.form['description'],
@@ -219,7 +219,7 @@ def insert_item():
         sqlsession.add(item)
         sqlsession.commit()
         return redirect("/")
-    sqlsession = SQLSession()
+    sqlsession = SQLSESSION()
     categories = sqlsession.query(Category).all()
     return render_template("new_item.html",
                            categories=categories)
@@ -242,14 +242,14 @@ def edit_item(item_id):
         session['target'] = url_for('edit_item', item_id=item_id)
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
-        sqlsession = SQLSession()
+        sqlsession = SQLSESSION()
         item = sqlsession.query(Item).filter_by(id=item_id).first()
         item.name = request.form['name']
         item.category_id = request.form['category']
         item.description = request.form['description']
         sqlsession.commit()
         return redirect(url_for('view_item', item_id=item_id))
-    sqlsession = SQLSession()
+    sqlsession = SQLSESSION()
     item = sqlsession.query(Item).filter_by(id=item_id).first()
     categories = sqlsession.query(Category).all()
     return render_template("edit_item.html",
@@ -274,12 +274,12 @@ def delete_item(item_id):
         session['target'] = url_for('delete_item', item_id=item_id)
         return redirect(url_for('gconnect'))
     if request.method == 'POST':
-        sqlsession = SQLSession()
+        sqlsession = SQLSESSION()
         item = sqlsession.query(Item).filter_by(id=item_id).first()
         sqlsession.delete(item)
         sqlsession.commit()
         return redirect("/")
-    sqlsession = SQLSession()
+    sqlsession = SQLSESSION()
     item = sqlsession.query(Item, Category).join(Category)\
                                            .filter(Item.id == item_id).first()
     return render_template("delete_item.html", item=item)
@@ -305,7 +305,7 @@ def json_api():
            'items' in the database.
     """
     if 'category' in request.args:
-        sqlsession = SQLSession()
+        sqlsession = SQLSESSION()
         category = sqlsession.query(Category)\
                              .filter_by(name=request.args['category']).first()
         items = sqlsession.query(Item).filter_by(category_id=category.id)\
@@ -314,11 +314,11 @@ def json_api():
                            'category_name': category.name,
                            'items': [item.serialize() for item in items]})
     elif 'item' in request.args:
-        sqlsession = SQLSession()
+        sqlsession = SQLSESSION()
         items = sqlsession.query(Item).filter_by(name=request.args['item'])\
                                       .all()
         return json.dumps([item.serialize() for item in items])
-    sqlsession = SQLSession()
+    sqlsession = SQLSESSION()
     categories = sqlsession.query(Category).all()
     items = sqlsession.query(Item).all()
     return json.dumps(
